@@ -5,6 +5,13 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Charger key.properties
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.example.gas_detector_app"
     compileSdk = flutter.compileSdkVersion
@@ -20,19 +27,28 @@ android {
     }
 
     defaultConfig {
-    applicationId = "com.example.gas_detector_app"
-    minSdk = 21         // ou la valeur minimale que ton app supporte
-    targetSdk = 33      // ou 34 selon ton Flutter SDK
-    versionCode = 1     // un entier qui augmente à chaque version
-    versionName = "1.0.0" // une chaîne représentant la version utilisateur
-}
+        applicationId = "com.example.gas_detector_app"
+        minSdk = 21
+        targetSdk = 33
+        versionCode = 1
+        versionName = "1.0.0"
+    }
 
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig signingConfigs.release
+            minifyEnabled false  // ou true si tu utilises Proguard
+            shrinkResources false // idem
+            // autres options si besoin
         }
     }
 }
