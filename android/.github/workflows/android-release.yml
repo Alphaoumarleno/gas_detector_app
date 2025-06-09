@@ -1,0 +1,64 @@
+name: Build and Deploy Android Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build, Sign and Deploy APK/AAB
+    runs-on: ubuntu-latest
+
+    env:
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "stable"
+
+      - name: Decode and save keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/detectegaz_keystore.jks
+
+      - name: Configure signing properties
+        run: |
+          echo "storePassword=${KEYSTORE_PASSWORD}" > ./android/key.properties
+          echo "keyPassword=${KEY_PASSWORD}" >> ./android/key.properties
+          echo "keyAlias=${KEY_ALIAS}" >> ./android/key.properties
+          echo "storeFile=detectegaz_keystore.jks" >> ./android/key.properties
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      # Déploiement Firebase
+      - name: Install Firebase CLI
+        uses: w9jds/firebase-action@v1.5.0
+
+      - name: Deploy to Firebase App Distribution
+        run: |
+          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+            --app 1:1234567890:android:abcdef123456 \
+            --token ${{ secrets.FIREBASE_TOKEN }}
+
+    # Pour Google Play Store (décommenter si utilisé)
+    # - name: Setup Google Play Service Account
+    #   uses: r0adkll/upload-google-play@v1
+    #   with:
+    #     serviceAccountJson: ${{ secrets.PLAY_STORE_JSON_KEY }}
+    #     packageName: com.alphaoumarleno.gas_detector_app
+    #     releaseFile: build/app/outputs/flutter-apk/app-release.apk
+    #     track: production
