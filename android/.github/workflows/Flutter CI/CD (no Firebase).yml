@@ -1,4 +1,4 @@
-name: Flutter CI/CD (no Firebase)
+name: Flutter CI/CD
 
 on:
   push:
@@ -9,16 +9,16 @@ on:
       - main
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup Flutter
+      
+      - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.0'
+          flutter-version: '3.10.0' # adapte selon ta version
 
       - name: Install dependencies
         run: flutter pub get
@@ -26,11 +26,33 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build release APK
-        run: flutter build apk --release
+      - name: Setup keystore
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > ./upload-keystore.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
+      - name: Build APK release signed
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p android/app
+          # Copier le keystore dans le dossier android/app
+          mv ./upload-keystore.jks android/app/
+
+          # Créer (ou écraser) le fichier key.properties avec les bonnes infos
+          echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+          echo "storeFile=app/upload-keystore.jks" >> android/key.properties
+
+          # Construire l'APK en release signé
+          flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: release-apk
+          name: app-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
