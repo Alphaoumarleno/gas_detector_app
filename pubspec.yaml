@@ -1,23 +1,33 @@
 name: gas_detector_app
-description: "A new Flutter project."
-
-publish_to: 'none'
+description: Application de détection de gaz avec base de données locale
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
-  firebase_core: ^2.11.0
-  firebase_auth: ^4.18.0
-  shared_preferences: ^2.2.2   # <- ajoute shared_preferences ici
+
+  # Stockage local
+  shared_preferences: ^2.2.2
+
+  # Icônes iOS
+  cupertino_icons: ^1.0.2
+
+  # Gestion d'état
+  provider: ^6.0.5
+
+  # Notifications locales (si tu les utilises toujours)
+  flutter_local_notifications: ^14.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^3.0.1
-  shared_preferences: ^2.2.2  # <- aussi ici pour que les tests fonctionnent bien
+
+flutter:
+  uses-material-design: true
