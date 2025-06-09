@@ -1,0 +1,28 @@
+name: Test Firebase Deploy Only
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-firebase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Créer un faux APK (si besoin)
+        run: |
+          mkdir -p build/app/outputs/flutter-apk
+          echo "Fake APK content" > build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Installer Firebase CLI
+        uses: w9jds/firebase-action@v1.5.0
+        with:
+          args: --version
+
+      - name: Déploiement vers Firebase App Distribution
+        run: |
+          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+            --app ${{ secrets.FIREBASE_APP_ID }} \
+            --token ${{ secrets.FIREBASE_TOKEN }}
