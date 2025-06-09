@@ -1,42 +1,36 @@
-Exécuter flutter build apk --release 
+name: Flutter CI
 
-Exécution de la tâche Gradle 'assembleRelease'... 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-ÉCHEC : La construction s’est terminée avec 2 échecs. 
+jobs:
+  build:
+    name: Build, Test & Upload APK
+    runs-on: ubuntu-latest
 
-1 : Échec de la tâche avec une exception. 
------------
-*Où: 
-Fichier de compilation '/home/runner/work/gas_detector_app/gas_detector_app/android/app/build.gradle' ligne : 41 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-* Ce qui n’a pas fonctionné : 
-Un problème s’est produit lors de l’évaluation du projet ' :app'. 
-> chemin d’accès ne doit pas être une chaîne nulle ou vide. path='null' 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.0'
 
-*Essayer: 
-> Exécutez avec l’option --stacktrace pour obtenir la trace de la pile. 
-> Exécutez avec l’option --info ou --debug pour obtenir plus de sortie de journal. 
-> Exécutez l’option --scan pour obtenir des informations complètes. 
-> Obtenez plus d’aide sur https://help.gradle.org.
-==============================================================================
+      - name: Get Flutter dependencies
+        run: flutter pub get
 
-2 : Échec de la tâche avec une exception. 
------------
-*Où: 
-Fichier de compilation '/home/runner/work/gas_detector_app/gas_detector_app/android/app/build.gradle' ligne : 41 
+      - name: Run Flutter tests
+        run: flutter test
 
-* Ce qui n’a pas fonctionné : 
-Un problème s’est produit lors de l’évaluation du projet ' :app'. 
-> chemin d’accès ne doit pas être une chaîne nulle ou vide. path='null' 
+      - name: Build release APK
+        run: flutter build apk --release
 
-*Essayer: 
-> Exécutez avec l’option --stacktrace pour obtenir la trace de la pile. 
-> Exécutez avec l’option --info ou --debug pour obtenir plus de sortie de journal. 
-> Exécutez l’option --scan pour obtenir des informations complètes. 
-> Obtenez plus d’aide sur https://help.gradle.org.
-==============================================================================
-
-ÉCHEC DE LA CONSTRUCTION en 1m 17s 
-Exécution de la tâche Gradle 'assembleRelease'... 78,8 secondes 
-Tâche Gradle assembleRelâcher avec le code de sortie 1 
-Erreur: Processus terminé avec le code de sortie 1. 
+      - name: Upload release APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
