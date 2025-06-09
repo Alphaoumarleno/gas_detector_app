@@ -39,12 +39,13 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/detectegaz_keystore.jks
 
-      - name: Configure signing properties
-        run: |
-          echo "storePassword=${KEYSTORE_PASSWORD}" > ./android/key.properties
-          echo "keyPassword=${KEY_PASSWORD}" >> ./android/key.properties
-          echo "keyAlias=${KEY_ALIAS}" >> ./android/key.properties
-          echo "storeFile=detectegaz_keystore.jks" >> ./android/key.properties
+          - name: Create key.properties
+          run: |
+            echo "storeFile=${{ github.workspace }}/android/app/upload-keystore.jks" > android/key.properties
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        
 
       - name: Build APK release
         run: flutter build apk --release

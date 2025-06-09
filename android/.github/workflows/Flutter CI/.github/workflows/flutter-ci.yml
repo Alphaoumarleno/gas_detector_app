@@ -1,47 +1,42 @@
-name: Flutter CI/CD
+Exécuter flutter build apk --release 
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+Exécution de la tâche Gradle 'assembleRelease'... 
 
-jobs:
-  build:
-    name: Build, Sign & Export APK
-    runs-on: ubuntu-latest
+ÉCHEC : La construction s’est terminée avec 2 échecs. 
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+1 : Échec de la tâche avec une exception. 
+-----------
+*Où: 
+Fichier de compilation '/home/runner/work/gas_detector_app/gas_detector_app/android/app/build.gradle' ligne : 41 
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.10.0'
+* Ce qui n’a pas fonctionné : 
+Un problème s’est produit lors de l’évaluation du projet ' :app'. 
+> chemin d’accès ne doit pas être une chaîne nulle ou vide. path='null' 
 
-      - name: Get dependencies
-        run: flutter pub get
+*Essayer: 
+> Exécutez avec l’option --stacktrace pour obtenir la trace de la pile. 
+> Exécutez avec l’option --info ou --debug pour obtenir plus de sortie de journal. 
+> Exécutez l’option --scan pour obtenir des informations complètes. 
+> Obtenez plus d’aide sur https://help.gradle.org.
+==============================================================================
 
-      - name: Run tests
-        run: flutter test
+2 : Échec de la tâche avec une exception. 
+-----------
+*Où: 
+Fichier de compilation '/home/runner/work/gas_detector_app/gas_detector_app/android/app/build.gradle' ligne : 41 
 
-      - name: Decode keystore from base64
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+* Ce qui n’a pas fonctionné : 
+Un problème s’est produit lors de l’évaluation du projet ' :app'. 
+> chemin d’accès ne doit pas être une chaîne nulle ou vide. path='null' 
 
-      - name: Create key.properties
-        run: |
-          echo "storeFile=upload-keystore.jks" > android/key.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+*Essayer: 
+> Exécutez avec l’option --stacktrace pour obtenir la trace de la pile. 
+> Exécutez avec l’option --info ou --debug pour obtenir plus de sortie de journal. 
+> Exécutez l’option --scan pour obtenir des informations complètes. 
+> Obtenez plus d’aide sur https://help.gradle.org.
+==============================================================================
 
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Upload release APK as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: gas-detector-app-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+ÉCHEC DE LA CONSTRUCTION en 1m 17s 
+Exécution de la tâche Gradle 'assembleRelease'... 78,8 secondes 
+Tâche Gradle assembleRelâcher avec le code de sortie 1 
+Erreur: Processus terminé avec le code de sortie 1. 
