@@ -1,10 +1,17 @@
+
 name: Build and Deploy Android Release
 
 on:
   push:
     branches:
       - main # Change selon ta branche
+workflow_dispatch:  # ➕ Ajout du déclencheur manuel
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # tes étapes ici...
 jobs:
   build:
     runs-on: ubuntu-latest
