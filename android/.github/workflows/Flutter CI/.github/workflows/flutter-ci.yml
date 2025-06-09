@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build & Sign APK
+    name: Build, Sign & Export APK
     runs-on: ubuntu-latest
 
     steps:
@@ -40,8 +40,8 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release
 
-      - name: Upload release APK artifact
+      - name: Upload release APK as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: release-apk
+          name: gas-detector-app-apk
           path: build/app/outputs/flutter-apk/app-release.apk
