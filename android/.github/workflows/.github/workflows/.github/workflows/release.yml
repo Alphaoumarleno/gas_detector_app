@@ -21,18 +21,14 @@ jobs:
         run: flutter pub get
 
       # Crée key.properties à la racine du projet
-      - name: Create key.properties file
-        run: |
-          echo "storePassword=$KEYSTORE_PASSWORD" > key.properties
-          echo "keyPassword=$KEY_PASSWORD" >> key.properties
-          echo "keyAlias=$KEY_ALIAS" >> key.properties
-          echo "storeFile=android/app/key/my-release-key.jks" >> key.properties
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+    - name: Create key.properties file
+    run: |
+    echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
+    echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+    echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+    echo "storeFile=android/app/upload-keystore.jks" >> key.properties
 
-      # Vérification (optionnel)
+# Vérification (optionnel)
       - name: Check key.properties
         run: cat key.properties
 
