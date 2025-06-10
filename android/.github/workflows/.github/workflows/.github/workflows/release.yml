@@ -26,17 +26,16 @@ jobs:
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-    - name: Create key.properties file
-      run: |
-        echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
-        echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
-        echo "keyAlias=$KEY_ALIAS" >> android/key.properties
-        echo "storeFile=key/my-release-key.jks" >> android/key.properties
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-
+        - name: Create key.properties file
+  run: |
+    echo "storePassword=$KEYSTORE_PASSWORD" > key.properties
+    echo "keyPassword=$KEY_PASSWORD" >> key.properties
+    echo "keyAlias=$KEY_ALIAS" >> key.properties
+    echo "storeFile=android/app/key/my-release-key.jks" >> key.properties
+  env:
+    KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+    KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+    KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
     - name: Install Flutter
       uses: subosito/flutter-action@v2
       with:
